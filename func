@@ -1,0 +1,84 @@
+
+#!/bin/bash
+
+get_topdir()
+{
+	SOURCE="${BASH_SOURCE[0]}"
+	while [ -h "$SOURCE" ];
+	do 
+		TOPDIR="$( cd -P "$( dirname "$SOURCE" )" && pwd| sed -e 's/ /\\ /g')"
+		SOURCE="$(readlink "$SOURCE")"
+		[[ $SOURCE != /* ]] && SOURCE="$DIR/$SOURCE"
+	done
+	TOPDIR="$( cd -P "$( dirname "$SOURCE" )" && pwd| sed -e 's/ /\\ /g')"
+}
+get_topdir
+echo ${TOPDIR}
+croot()
+{
+	if [[ -n "$TOPDIR" ]];then
+		cd ${TOPDIR}
+	fi
+}
+
+echo_pass()
+{
+	echo -e "\033[32m PASS: $* \033[0m"
+}
+
+echo_fail()
+{
+	echo -e "\033[31m FAIL: $* \033[0m"
+}
+
+echo_warn()
+{
+	echo -e "\033[33m WARN: $* \033[0m"
+}
+
+echo_info()
+{
+	echo -e "\033[36m $* \033[0m"
+}
+
+#check functions return
+exec_check()
+{
+	return_val=$?
+	if [[ $return_val -eq 0 ]];then
+		echo_pass $*
+	else
+		echo_fail $*
+	fi
+	croot
+	return $return_val
+}
+
+exec_cmd()
+{
+	local startTime_s=`date '+%s'`
+	local startTime=`date '+%m-%d %T'`
+	echo_info "<<< $@ starting on $startTime>>>"
+	eval $@
+	exec_check "$@"
+	local endTime_s=`date '+%s'`
+	local endTime=`date '+%m-%d %T'`
+	echo_info "<<< $@ finished on $endTime>>>"
+	local sumTime=$[ $endTime_s - $startTime_s ]
+	echo_info "<<< $@ takes $sumTime seconds>>>"
+	return $return_val
+}
+
+check_cmd_exist()
+{
+	command -v $1 >/dev/null 2>&1
+}
+
+get_git_src()
+{
+	while [ ! -d $1 ]
+	do
+		git clone $2
+	done
+}
+
