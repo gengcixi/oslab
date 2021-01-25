@@ -11,3 +11,4 @@ source ./func
 echo_info "start build.sh"
 echo_pass "build all is passed"
 echo_info "finish build.sh"
+exec_check "build"
