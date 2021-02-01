@@ -8,5 +8,5 @@
 
 ./build.sh
 if [ $? -eq 0 ];then
-	echo verify done
+	echo "verify done"
 fi
