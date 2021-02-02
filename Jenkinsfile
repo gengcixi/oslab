@@ -7,7 +7,7 @@ pipeline {
             steps {
                 echo 'Building..'
                 echo "Running ${env.BUILD_ID} on ${env.JENKINS_URL}"
-                script: 'verify.sh'
+                verify.sh
             }
         }
         stage('Test') {
